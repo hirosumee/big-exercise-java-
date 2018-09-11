@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  *
@@ -32,16 +33,14 @@ public class UserDAO extends IDTO {
     }
     public boolean insert(UserDTO user) throws SQLException{
         
-//        String sql = "INSERT INTO dbo."+ this.table_name+" (username,password) VALUES ('"+user.getUsername()+"','"+user.getPassword()+"')";
-        String sql = String.format("INSERT INTO dbo.%s (username,password) VALUES (?,?)", this.table_name);
+        String sql = "INSERT INTO dbo."+ this.table_name+" (username,password) VALUES ('"+user.getUsername()+"','"+user.getPassword()+"')";
         System.out.println(sql);
        
-        PreparedStatement preparedStatement = DataProvider.getInstance()
+        return DataProvider.getInstance()
                 .getConnection()
-                .prepareStatement(sql);
-        preparedStatement.setString(1, user.getUsername());
-        preparedStatement.setString(2, user.getPassword());
-        return preparedStatement.execute();
+                .createStatement()
+                .execute(sql);
+        
     }
     public ResultSet findOne(UserDTO user) throws SQLException{
         String sql = String.format("SELECT TOP 1 * FROM dbo.%s WHERE username = ? AND password = ?",this.table_name);
