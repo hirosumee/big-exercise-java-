@@ -5,6 +5,7 @@
  */
 package jbdc.demo;
 
+import DTO.UserDTO;
 import javax.swing.JPanel;
 
 /**
@@ -14,7 +15,8 @@ import javax.swing.JPanel;
 public class Main extends javax.swing.JFrame {
     
     private JPanel loginPanel = new LoginAndSignup(this);
-    private JPanel testPanel = new Test(this);
+    private JPanel testPanel = new Home(this);
+    protected UserDTO user = null;
     
     /**
      * Creates new form Home
@@ -33,21 +35,57 @@ public class Main extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jMenuBar1 = new javax.swing.JMenuBar();
+        jMenu1 = new javax.swing.JMenu();
+        jMenuItem1 = new javax.swing.JMenuItem();
+        jMenu2 = new javax.swing.JMenu();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setFont(new java.awt.Font("Iosevka", 0, 10)); // NOI18N
+        setFont(new java.awt.Font("Iosevka", 0, 12)); // NOI18N
         setResizable(false);
         setSize(new java.awt.Dimension(700, 500));
 
+        jMenuBar1.setFont(new java.awt.Font("Iosevka", 1, 12)); // NOI18N
+
+        jMenu1.setText("Account");
+        jMenu1.setFont(new java.awt.Font("Iosevka", 1, 12)); // NOI18N
+
+        jMenuItem1.setFont(new java.awt.Font("Iosevka", 1, 12)); // NOI18N
+        jMenuItem1.setText("Sign out");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
+
+        jMenuBar1.add(jMenu1);
+
+        jMenu2.setText("Edit");
+        jMenu2.setFont(new java.awt.Font("Iosevka", 1, 12)); // NOI18N
+        jMenuBar1.add(jMenu2);
+
+        setJMenuBar(jMenuBar1);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // TODO add your handling code here:
+        this.user = null;
+        this.changeToHome();
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
     
     public void changeToHome(){
+        jMenuBar1.setVisible(false);
         this.setContentPane(loginPanel);
         this.pack();
     }
     
     public void changeToTest(){
+        jMenuBar1.setVisible(true);
         this.setContentPane(testPanel);
+        jMenuItem1.setText(String.format("Sign out <%s>", this.user.getUsername()));
         this.pack();
     }
     /**
@@ -88,5 +126,9 @@ public class Main extends javax.swing.JFrame {
    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
+    private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     // End of variables declaration//GEN-END:variables
 }

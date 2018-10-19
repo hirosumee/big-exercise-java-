@@ -59,12 +59,12 @@ public class LoginAndSignup extends javax.swing.JPanel {
         setPreferredSize(new java.awt.Dimension(523, 300));
 
         jTabbedPane1.setBackground(new java.awt.Color(209, 196, 233));
-        jTabbedPane1.setForeground(new java.awt.Color(0, 0, 0));
+        jTabbedPane1.setForeground(new java.awt.Color(102, 102, 102));
         jTabbedPane1.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
-        jTabbedPane1.setFont(new java.awt.Font("Iosevka", 1, 14)); // NOI18N
+        jTabbedPane1.setFont(new java.awt.Font("Iosevka", 1, 12)); // NOI18N
 
         jPanel1.setBackground(new java.awt.Color(209, 196, 233));
-        jPanel1.setForeground(new java.awt.Color(0, 0, 0));
+        jPanel1.setForeground(new java.awt.Color(153, 153, 153));
 
         jTextField2.setName(""); // NOI18N
         jTextField2.addActionListener(new java.awt.event.ActionListener() {
@@ -75,14 +75,15 @@ public class LoginAndSignup extends javax.swing.JPanel {
 
         jLabel6.setBackground(new java.awt.Color(0, 0, 0));
         jLabel6.setFont(new java.awt.Font("Iosevka", 1, 16)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel6.setForeground(new java.awt.Color(102, 102, 102));
         jLabel6.setText("Username :");
 
         jLabel7.setFont(new java.awt.Font("Iosevka", 1, 16)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel7.setForeground(new java.awt.Color(102, 102, 102));
         jLabel7.setText("Password :");
 
         jButton1.setFont(new java.awt.Font("Iosevka", 1, 16)); // NOI18N
+        jButton1.setForeground(new java.awt.Color(102, 102, 102));
         jButton1.setText("sign in");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -123,24 +124,24 @@ public class LoginAndSignup extends javax.swing.JPanel {
                     .addComponent(jLabel7))
                 .addGap(27, 27, 27)
                 .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(66, Short.MAX_VALUE))
+                .addContainerGap(77, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("sign in", jPanel1);
 
         jPanel2.setBackground(new java.awt.Color(209, 196, 233));
-        jPanel2.setForeground(new java.awt.Color(102, 102, 102));
+        jPanel2.setForeground(new java.awt.Color(153, 153, 153));
 
         jLabel3.setFont(new java.awt.Font("Iosevka", 1, 16)); // NOI18N
-        jLabel3.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel3.setForeground(new java.awt.Color(102, 102, 102));
         jLabel3.setText("Username :");
 
         jLabel4.setFont(new java.awt.Font("Iosevka", 1, 16)); // NOI18N
-        jLabel4.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel4.setForeground(new java.awt.Color(102, 102, 102));
         jLabel4.setText("Password :");
 
         jLabel5.setFont(new java.awt.Font("Iosevka", 1, 16)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel5.setForeground(new java.awt.Color(102, 102, 102));
         jLabel5.setText("Repassword :");
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
@@ -156,6 +157,7 @@ public class LoginAndSignup extends javax.swing.JPanel {
         });
 
         jButton2.setFont(new java.awt.Font("Iosevka", 1, 16)); // NOI18N
+        jButton2.setForeground(new java.awt.Color(102, 102, 102));
         jButton2.setText("sign up");
         jButton2.setPreferredSize(new java.awt.Dimension(70, 37));
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -202,7 +204,7 @@ public class LoginAndSignup extends javax.swing.JPanel {
                     .addComponent(jPasswordField2, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(26, 26, 26)
                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("sign up", jPanel2);
@@ -257,10 +259,11 @@ public class LoginAndSignup extends javax.swing.JPanel {
        String password = new String(jPasswordField3.getPassword());
        
        UserDTO user =UserCtrl.getInstance().login(username, password);
-       if(user!=null){
+       if(user == null){
            JOptionPane.showMessageDialog(parent, "Đăng nhập thất bại!",
                   "Notification", JOptionPane.WARNING_MESSAGE);
        } else {
+           this.parent.user = user;
            parent.changeToTest();
        }
     }//GEN-LAST:event_jButton1ActionPerformed

@@ -11,13 +11,13 @@ import javax.swing.JFrame;
  *
  * @author hirosume
  */
-public class Test extends javax.swing.JPanel {
+public class Home extends javax.swing.JPanel {
 
     /**
      * Creates new form Test
      */
     private JFrame parent = null;
-    public Test(JFrame parent) {
+    public Home(JFrame parent) {
         initComponents();
         this.parent = parent;
     }
@@ -34,6 +34,7 @@ public class Test extends javax.swing.JPanel {
         jLabel1 = new javax.swing.JLabel();
 
         setMinimumSize(new java.awt.Dimension(100, 100));
+        setPreferredSize(new java.awt.Dimension(523, 288));
 
         jLabel1.setText("TEST TESt");
 
@@ -44,14 +45,14 @@ public class Test extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(118, 118, 118)
                 .addComponent(jLabel1)
-                .addContainerGap(214, Short.MAX_VALUE))
+                .addContainerGap(337, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(116, 116, 116)
                 .addComponent(jLabel1)
-                .addContainerGap(169, Short.MAX_VALUE))
+                .addContainerGap(206, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
