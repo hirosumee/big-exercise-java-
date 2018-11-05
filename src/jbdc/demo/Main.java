@@ -15,7 +15,7 @@ import javax.swing.JPanel;
 public class Main extends javax.swing.JFrame {
     
     private JPanel loginPanel = new LoginAndSignup(this);
-    private JPanel testPanel = new Home(this);
+    private JPanel testPanel;
     protected UserDTO user = null;
     
     /**
@@ -43,7 +43,7 @@ public class Main extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setFont(new java.awt.Font("Iosevka", 0, 12)); // NOI18N
         setResizable(false);
-        setSize(new java.awt.Dimension(700, 500));
+        setSize(new java.awt.Dimension(1000, 700));
 
         jMenuBar1.setFont(new java.awt.Font("Iosevka", 1, 12)); // NOI18N
 
@@ -83,6 +83,7 @@ public class Main extends javax.swing.JFrame {
     }
     
     public void changeToTest(){
+        testPanel = new Home(this);
         jMenuBar1.setVisible(true);
         this.setContentPane(testPanel);
         jMenuItem1.setText(String.format("Sign out <%s>", this.user.getUsername()));

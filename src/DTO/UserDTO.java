@@ -40,4 +40,9 @@ public class UserDTO {
         this.username = username;
         this.password = password;
     }
+
+    @Override
+    public String toString() {
+        return "UserDTO{" + "username=" + username + ", password=" + password + ", id=" + id + '}';
+    }
 }

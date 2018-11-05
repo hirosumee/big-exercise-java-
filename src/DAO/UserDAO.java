@@ -6,20 +6,21 @@
 package DAO;
 
 import DTO.UserDTO;
-import Interfaces.IDTO;
+import Interfaces.DAO;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 /**
  *
  * @author a
  */
-public class UserDAO extends IDTO {
+public class UserDAO extends DAO <UserDAO> {
 
-    protected String table_name = "dbo.tpl_user";
+    protected String table_name = "tpl_Account";
     private static UserDAO instance = null;
 
     public static UserDAO getInstance() {
@@ -37,14 +38,13 @@ public class UserDAO extends IDTO {
 
         String sql = String.format("INSERT INTO %s (username,password) VALUES (?,?)", this.table_name);
 
-        PreparedStatement preparedStatement = DataProvider.getInstance()
-                .getConnection()
+        PreparedStatement preparedStatement = this.connection
                 .prepareStatement(sql);
         preparedStatement.setString(1, user.getUsername());
         preparedStatement.setString(2, user.getPassword());
         return preparedStatement.execute();
     }
-
+    
     public ResultSet findOne(UserDTO user) throws SQLException {
         String sql = String.format("SELECT TOP 1 * FROM %s WHERE username = ? AND password = ?", this.table_name);
 
@@ -56,4 +56,26 @@ public class UserDAO extends IDTO {
 
         return preparedStatement.executeQuery();
     }
+
+    @Override
+    public boolean insert() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public UserDAO findOne() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+
+    @Override
+    public ArrayList<UserDAO> update() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public ArrayList<UserDAO> find(PreparedStatement preparedStatement) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

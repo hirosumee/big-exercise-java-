@@ -66,6 +66,7 @@ public class LoginAndSignup extends javax.swing.JPanel {
         jPanel1.setBackground(new java.awt.Color(209, 196, 233));
         jPanel1.setForeground(new java.awt.Color(153, 153, 153));
 
+        jTextField2.setText("admin");
         jTextField2.setName(""); // NOI18N
         jTextField2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -81,6 +82,8 @@ public class LoginAndSignup extends javax.swing.JPanel {
         jLabel7.setFont(new java.awt.Font("Iosevka", 1, 16)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(102, 102, 102));
         jLabel7.setText("Password :");
+
+        jPasswordField3.setText("a");
 
         jButton1.setFont(new java.awt.Font("Iosevka", 1, 16)); // NOI18N
         jButton1.setForeground(new java.awt.Color(102, 102, 102));

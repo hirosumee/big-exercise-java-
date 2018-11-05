@@ -40,7 +40,7 @@ public class DataProvider {
     public DataProvider() {
     }
 
-    private final String connectionURL = "jdbc:sqlserver://localhost:1433;database=jbdc_btl";
+    private final String connectionURL = "jdbc:sqlserver://localhost:1433;database=JDBC";
     private final String username = "SA";
     private final String password = "123456";
 }
