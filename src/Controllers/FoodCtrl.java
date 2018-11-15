@@ -28,4 +28,7 @@ public class FoodCtrl {
     public ArrayList<FoodDTO> findByCategory(int id) throws SQLException{
         return FoodDAO.getInstance().findByOneField("idCategory", new Integer(id));
     }
+    public ArrayList<FoodDTO> findById(int id) throws SQLException{
+        return FoodDAO.getInstance().findByOneField("id", new Integer(id));
+    }
 }

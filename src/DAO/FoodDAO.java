@@ -36,27 +36,17 @@ public class FoodDAO extends DAO<FoodDTO> {
     public ArrayList<FoodDTO> findByOneField(String where, Object value) throws SQLException{
         String sql = String.format("SELECT * FROM %s WHERE %s = ?", this.table_name, where);
         PreparedStatement ps = this.connection.prepareStatement(sql);
-        System.out.println(sql);
         if(value instanceof String) {
             ps.setString(1,(String) value );
         }
         if(value instanceof Integer) {
             ps.setInt(1,(int) value );
         }
-        return this.find(ps);
+        return this.excuteQuery(ps);
     }
+  
     @Override
-    protected boolean insert() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected FoodDTO findOne() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected ArrayList<FoodDTO> find(PreparedStatement preparedStatement) {
+    protected ArrayList<FoodDTO> excuteQuery(PreparedStatement preparedStatement) {
         ArrayList<FoodDTO> foods = new ArrayList<FoodDTO>();
         try {
             ResultSet rs = preparedStatement.executeQuery();
@@ -71,7 +61,7 @@ public class FoodDAO extends DAO<FoodDTO> {
     }
 
     @Override
-    protected ArrayList<FoodDTO> update() {
+    protected boolean execute(PreparedStatement preparedStatement) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -16,6 +16,7 @@ public class Main extends javax.swing.JFrame {
     
     private JPanel loginPanel = new LoginAndSignup(this);
     private JPanel testPanel;
+    private HoaDon hoaDonPanel;
     protected UserDTO user = null;
     
     /**
@@ -37,8 +38,12 @@ public class Main extends javax.swing.JFrame {
 
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
+        jMenuItem2 = new javax.swing.JMenuItem();
         jMenuItem1 = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
+        adminBtn = new javax.swing.JMenu();
+        HoaDonBtn = new javax.swing.JMenuItem();
+        ThucDonBtn = new javax.swing.JMenuItem();
+        TaikhoanBtn = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setFont(new java.awt.Font("Iosevka", 0, 12)); // NOI18N
@@ -49,6 +54,14 @@ public class Main extends javax.swing.JFrame {
 
         jMenu1.setText("Account");
         jMenu1.setFont(new java.awt.Font("Iosevka", 1, 12)); // NOI18N
+
+        jMenuItem2.setText("Home");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem2);
 
         jMenuItem1.setFont(new java.awt.Font("Iosevka", 1, 12)); // NOI18N
         jMenuItem1.setText("Sign out");
@@ -61,9 +74,24 @@ public class Main extends javax.swing.JFrame {
 
         jMenuBar1.add(jMenu1);
 
-        jMenu2.setText("Edit");
-        jMenu2.setFont(new java.awt.Font("Iosevka", 1, 12)); // NOI18N
-        jMenuBar1.add(jMenu2);
+        adminBtn.setText("Admin");
+        adminBtn.setFont(new java.awt.Font("Iosevka", 1, 12)); // NOI18N
+
+        HoaDonBtn.setText("Hóa đơn");
+        HoaDonBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                HoaDonBtnActionPerformed(evt);
+            }
+        });
+        adminBtn.add(HoaDonBtn);
+
+        ThucDonBtn.setText("Thực đơn");
+        adminBtn.add(ThucDonBtn);
+
+        TaikhoanBtn.setText("Tài khoản");
+        adminBtn.add(TaikhoanBtn);
+
+        jMenuBar1.add(adminBtn);
 
         setJMenuBar(jMenuBar1);
 
@@ -75,6 +103,22 @@ public class Main extends javax.swing.JFrame {
         this.user = null;
         this.changeToHome();
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void HoaDonBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HoaDonBtnActionPerformed
+        // TODO add your handling code here:
+        changeToHoaDonBtn();
+    }//GEN-LAST:event_HoaDonBtnActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        this.changeToTest();
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+    
+    public void changeToHoaDonBtn(){
+        hoaDonPanel = new HoaDon(this);
+        jMenuBar1.setVisible(true);
+        this.setContentPane(hoaDonPanel);
+        this.pack();
+    }
     
     public void changeToHome(){
         jMenuBar1.setVisible(false);
@@ -127,9 +171,13 @@ public class Main extends javax.swing.JFrame {
    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenuItem HoaDonBtn;
+    private javax.swing.JMenuItem TaikhoanBtn;
+    private javax.swing.JMenuItem ThucDonBtn;
+    private javax.swing.JMenu adminBtn;
     private javax.swing.JMenu jMenu1;
-    private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     // End of variables declaration//GEN-END:variables
 }

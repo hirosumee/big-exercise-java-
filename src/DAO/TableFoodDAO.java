@@ -35,22 +35,12 @@ public class TableFoodDAO extends DAO<TableFoodDTO> {
     }
 
     @Override
-    protected boolean insert() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected TableFoodDTO findOne() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected ArrayList<TableFoodDTO> find(PreparedStatement preparedStatement) {
+    protected ArrayList<TableFoodDTO> excuteQuery(PreparedStatement preparedStatement) {
         ArrayList<TableFoodDTO> tableFoods = new ArrayList<TableFoodDTO>();
         try {
             ResultSet rs = preparedStatement.executeQuery();
-            while(rs.next()) {
-                TableFoodDTO temp = new TableFoodDTO(rs.getInt("id"),rs.getString("name"),rs.getString("status"));
+            while (rs.next()) {
+                TableFoodDTO temp = new TableFoodDTO(rs.getInt("id"), rs.getString("name"), rs.getString("status"));
                 tableFoods.add(temp);
             }
         } catch (SQLException ex) {
@@ -58,15 +48,30 @@ public class TableFoodDAO extends DAO<TableFoodDTO> {
         }
         return tableFoods;
     }
-    public ArrayList<TableFoodDTO> getAll() throws SQLException{
-            String sql = String.format("SELECT * FROM  %s", this.table_name) ;
-            PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
-            return this.find(preparedStatement);
+
+    public ArrayList<TableFoodDTO> getAll() throws SQLException {
+        String sql = String.format("SELECT * FROM  %s", this.table_name);
+        PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
+        return this.excuteQuery(preparedStatement);
     }
 
     @Override
-    protected ArrayList<TableFoodDTO> update() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    protected boolean execute(PreparedStatement preparedStatement) {
+        try {
+            return preparedStatement.execute();
+        } catch (SQLException ex) {
+            Logger.getLogger(TableFoodDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 
+    public boolean updateStatus(int idTable,String status) throws SQLException {
+        String sql = String.format("UPDATE %s SET status = ? WHERE id = ?", this.table_name);
+        PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
+        preparedStatement.setString(1, status);
+        preparedStatement.setInt(2, idTable);
+        return this.execute(preparedStatement);
+    }
+    public static String CO_NGUOI = "Có Người";
+    public static String KHONG_CO_NGUOI = "Không Có Người";
 }

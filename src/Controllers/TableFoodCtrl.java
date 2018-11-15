@@ -28,4 +28,10 @@ public class TableFoodCtrl {
     public ArrayList<TableFoodDTO> getAll() throws SQLException{
         return TableFoodDAO.getInstance().getAll();
     }
+    public boolean updateCoNguoi(int idTable) throws SQLException{
+        return TableFoodDAO.getInstance().updateStatus(idTable, TableFoodDAO.CO_NGUOI);
+    }
+    public boolean updateKhongNguoi(int idTable) throws SQLException{
+        return TableFoodDAO.getInstance().updateStatus(idTable, TableFoodDAO.KHONG_CO_NGUOI);
+    }
 }

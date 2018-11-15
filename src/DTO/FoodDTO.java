@@ -78,7 +78,7 @@ public class FoodDTO {
 
     @Override
     public String toString() {
-        return name;
+        return name + ' ' + price;
     }
 
 }

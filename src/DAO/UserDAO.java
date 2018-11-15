@@ -57,24 +57,15 @@ public class UserDAO extends DAO <UserDAO> {
         return preparedStatement.executeQuery();
     }
 
+   
+
     @Override
-    public boolean insert() {
+    public ArrayList<UserDAO> excuteQuery(PreparedStatement preparedStatement) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public UserDAO findOne() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-
-    @Override
-    public ArrayList<UserDAO> update() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public ArrayList<UserDAO> find(PreparedStatement preparedStatement) {
+    protected boolean execute(PreparedStatement preparedStatement) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

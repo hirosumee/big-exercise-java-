@@ -79,7 +79,11 @@ public class TablesContainer extends JPanel implements MouseListener {
             }
         }
     }
-    
+    public void update() {
+        this.removeAll();
+        initTable();
+        this.repaint();
+    }
     @Override
     public void mouseClicked(MouseEvent e) {
 

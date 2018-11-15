@@ -37,21 +37,12 @@ public class FoodCategoryDAO extends DAO<FoodCategoryDTO> {
     public ArrayList<FoodCategoryDTO> getAll() throws SQLException {
         String sql = String.format("SELECT * FROM  %s", this.table_name) ;
             PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
-            return this.find(preparedStatement);
+            return this.excuteQuery(preparedStatement);
     }
 
+   
     @Override
-    protected boolean insert() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected FoodCategoryDTO findOne() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    protected ArrayList<FoodCategoryDTO> find(PreparedStatement preparedStatement) {
+    protected ArrayList<FoodCategoryDTO> excuteQuery(PreparedStatement preparedStatement) {
         ArrayList<FoodCategoryDTO> foodCategories = new ArrayList<FoodCategoryDTO>();
         try {
             ResultSet rs = preparedStatement.executeQuery();
@@ -66,7 +57,7 @@ public class FoodCategoryDAO extends DAO<FoodCategoryDTO> {
     }
 
     @Override
-    protected ArrayList<FoodCategoryDTO> update() {
+    protected boolean execute(PreparedStatement preparedStatement) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

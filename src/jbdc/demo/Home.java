@@ -5,9 +5,13 @@
  */
 package jbdc.demo;
 
+import Controllers.BillCtrl;
+import Controllers.BillInfoCtrl;
 import Controllers.FoodCategoryCtrl;
 import Controllers.FoodCtrl;
 import Controllers.TableFoodCtrl;
+import DTO.BillDTO;
+import DTO.BillInfoDTO;
 import DTO.FoodCategoryDTO;
 import DTO.FoodDTO;
 import DTO.TableFoodDTO;
@@ -21,6 +25,7 @@ import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
+import javax.swing.table.DefaultTableModel;
 import jbdc.demo.Components.TablesContainer;
 
 /**
@@ -32,26 +37,36 @@ public class Home extends javax.swing.JPanel {
     /**
      * Creates new form Test
      */
-    private JFrame parent = null;
-    ArrayList<TableFoodDTO> tableFoods;
+    private Main parent = null;
     TablesContainer tc;
-    String currentTable;
-    
-    public Home(JFrame parent) {
+    TableFoodDTO currentTable;
+    ArrayList<BillInfoDTO> currentBills;
+    BillDTO currentBill;
+    DefaultTableModel model;
+
+    public Home(Main parent) {
         initComponents();
         this.parent = parent;
         initTablesContainer();
         initFoodCategory();
         blockRightPanel();
+        model = (DefaultTableModel) this.jTable1.getModel();
     }
-    
+
     private void blockRightPanel() {
         selectFood.setEnabled(false);
         selectFoodCategory.setEnabled(false);
+        count.setEnabled(false);
+        ThemMonBtn.setEnabled(false);
+        ThanhToanBtn.setEnabled(false);
     }
+
     private void enableRightPanel() {
         selectFood.setEnabled(true);
         selectFoodCategory.setEnabled(true);
+        count.setEnabled(true);
+        ThemMonBtn.setEnabled(true);
+        ThanhToanBtn.setEnabled(true);
     }
 
     private void initTablesContainer() {
@@ -63,21 +78,46 @@ public class Home extends javax.swing.JPanel {
 
     private void intFood(FoodCategoryDTO e) {
         try {
-            selectFood.removeAll();
+            selectFood.removeAllItems();
             ArrayList<FoodDTO> foods = FoodCtrl.getInstance().findByCategory(e.getId());
+            System.out.println(foods);
             for (FoodDTO i : foods) {
                 selectFood.addItem(i);
             }
         } catch (SQLException ex) {
             Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
 
     public void updateCurrentTable(String e) {
-        labelCurrentTable.setText(e);
-        currentTable = e;
-        enableRightPanel();
+
+        try {
+            boolean flag = false;
+            TableFoodDTO temp = null;
+            ArrayList<TableFoodDTO> tableFoods = TableFoodCtrl.getInstance().getAll();
+            for (TableFoodDTO f : tableFoods) {
+                if (f.getName().equals(e)) {
+                    flag = true;
+                    temp = f;
+                    break;
+                }
+            }
+            if (!flag) {
+                labelCurrentTable.setText("Không tìm thấy bàn này");
+                currentTable = null;
+                this.blockRightPanel();
+                return;
+            }
+            labelCurrentTable.setText(temp.getName());
+            currentTable = temp;
+            currentBill = BillCtrl.getInstance().findOneOrInsert(this.currentTable.getId(), this.parent.user.getId());
+            currentBills = BillInfoCtrl.getInstance().getAllFromBill(currentBill.getId());
+            updateTable(currentBill.getId());
+            enableRightPanel();
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void initFoodCategory() {
@@ -101,6 +141,46 @@ public class Home extends javax.swing.JPanel {
         }
     }
 
+    FoodDTO findFood(int idFood) {
+        try {
+            ArrayList<FoodDTO> temp = FoodCtrl.getInstance().findById(idFood);
+            if (temp.size() != 1) {
+                return null;
+            }
+            return temp.get(0);
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    private void updateTotal(int total) {
+        this.totalPrice.setText(new Integer(total).toString());
+    }
+
+    private void updateTable(int idBill) {
+        try {
+
+            while (this.model.getRowCount() > 0) {
+                this.model.removeRow(0);
+            }
+
+            ArrayList<BillInfoDTO> temp = BillInfoCtrl.getInstance().getAllFromBill(idBill);
+            int totalPrice = 0;
+            for (BillInfoDTO e : temp) {
+                FoodDTO food = findFood(e.getIdFood());
+                if (food == null || e.getCount() == 0) {
+                    continue;
+                }
+                totalPrice += e.getCount() * food.getPrice();
+                this.model.insertRow(this.model.getRowCount(), new Object[]{food.getName(), e.getCount(), food.getPrice(), e.getCount() * food.getPrice()});
+            }
+            updateTotal(totalPrice);
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -112,17 +192,15 @@ public class Home extends javax.swing.JPanel {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        selectFoodCategory = new javax.swing.JComboBox<>();
-        selectFood = new javax.swing.JComboBox<>();
-        jButton1 = new javax.swing.JButton();
-        jSpinner1 = new javax.swing.JSpinner();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jLabel1 = new javax.swing.JLabel();
-        jComboBox1 = new javax.swing.JComboBox<>();
-        jTextField1 = new javax.swing.JTextField();
-        jSpinner2 = new javax.swing.JSpinner();
-        jButton2 = new javax.swing.JButton();
+        totalPrice = new javax.swing.JTextField();
+        ThanhToanBtn = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        selectFoodCategory = new javax.swing.JComboBox<>();
+        selectFood = new javax.swing.JComboBox<>();
+        ThemMonBtn = new javax.swing.JButton();
+        count = new javax.swing.JSpinner();
         labelCurrentTable = new javax.swing.JLabel();
 
         setMinimumSize(new java.awt.Dimension(100, 100));
@@ -138,104 +216,119 @@ public class Home extends javax.swing.JPanel {
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGap(0, 678, Short.MAX_VALUE)
         );
-
-        jButton1.setText("Thêm món ");
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Món", "Số lượng", "Đơn giá", "Giá"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
-        jLabel1.setText("Chuyển bàn");
+        totalPrice.setEditable(false);
+        totalPrice.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        totalPrice.setText("000000");
 
-        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        ThanhToanBtn.setText("Thanh toán");
+        ThanhToanBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ThanhToanBtnActionPerformed(evt);
+            }
+        });
 
-        jTextField1.setText("jTextField1");
+        ThemMonBtn.setText("Thêm món ");
+        ThemMonBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ThemMonBtnActionPerformed(evt);
+            }
+        });
 
-        jButton2.setText("Thanh toán");
+        count.setModel(new javax.swing.SpinnerNumberModel(1, 0, 100, 1));
 
         labelCurrentTable.setText("Bàn");
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(selectFoodCategory, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(selectFood, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(count, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addComponent(labelCurrentTable)
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(ThemMonBtn)
+                .addGap(48, 48, 48))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(labelCurrentTable)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addComponent(selectFoodCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(12, 12, 12)
+                                .addComponent(selectFood, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(9, 9, 9))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                                .addComponent(count, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(25, 25, 25))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(ThemMonBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(9, 9, 9))))
+        );
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+            .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGap(16, 16, 16)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(selectFoodCategory, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(selectFood, javax.swing.GroupLayout.PREFERRED_SIZE, 282, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(labelCurrentTable))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addContainerGap())
-                        .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addComponent(jLabel1)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(totalPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 97, Short.MAX_VALUE)
-                                .addComponent(jSpinner2))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jButton2)
-                            .addGap(2, 2, 2)))))
+                            .addComponent(ThanhToanBtn))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(32, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(selectFoodCategory, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(12, 12, 12)
-                        .addComponent(selectFood, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(labelCurrentTable))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jSpinner1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap()
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 474, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 520, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel1)
-                            .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(22, 22, 22))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jSpinner2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addContainerGap())))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(ThanhToanBtn, javax.swing.GroupLayout.DEFAULT_SIZE, 66, Short.MAX_VALUE)
+                    .addComponent(totalPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -254,27 +347,69 @@ public class Home extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 697, Short.MAX_VALUE)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
                     .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    private void ThemMonBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ThemMonBtnActionPerformed
+        // TODO add your handling code here:
+        if (this.currentTable != null && this.currentBill != null && this.currentBills != null) {
+            try {
+                //check and set "Có Người"
+                if (!currentTable.getStatus().equals("Có Người")) {
+                    TableFoodCtrl.getInstance().updateCoNguoi(currentTable.getId());
+                    tc.update();
+                }
+
+                FoodDTO f = (FoodDTO) this.selectFood.getSelectedItem();
+                BillInfoDTO temp = new BillInfoDTO(this.currentBill.getId(), f.getId(), (int) this.count.getModel().getValue());
+                // find this billinfo in bill 
+                ArrayList<BillInfoDTO> thisFoodInBill = BillInfoCtrl.getInstance().findByBillIdAndFoodId(this.currentBill.getId(), f.getId());
+                if (thisFoodInBill.isEmpty()) {
+                    BillInfoCtrl.getInstance().insert(this.currentBill.getId(), f.getId(), (int) this.count.getModel().getValue());
+                } else {
+                    BillInfoCtrl.getInstance().updateCountByBillInfo(this.currentBill.getId(), f.getId(), (int) this.count.getModel().getValue());
+                }
+                //
+                updateTable(this.currentBill.getId());
+            } catch (SQLException ex) {
+                Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }//GEN-LAST:event_ThemMonBtnActionPerformed
+
+    private void ThanhToanBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ThanhToanBtnActionPerformed
+        try {
+            // TODO add your handling code here:
+            if (!currentBills.isEmpty()) {
+                TableFoodCtrl.getInstance().updateKhongNguoi(currentTable.getId());
+                //update bill
+                BillCtrl.getInstance().updateDaThanhToan(currentBill.getId());
+                tc.update();
+                this.blockRightPanel();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(Home.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_ThanhToanBtnActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JComboBox<String> jComboBox1;
-    private javax.swing.JLabel jLabel1;
+    private javax.swing.JButton ThanhToanBtn;
+    private javax.swing.JButton ThemMonBtn;
+    private javax.swing.JSpinner count;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSpinner jSpinner1;
-    private javax.swing.JSpinner jSpinner2;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel labelCurrentTable;
     private javax.swing.JComboBox<FoodDTO> selectFood;
     private javax.swing.JComboBox<FoodCategoryDTO> selectFoodCategory;
+    private javax.swing.JTextField totalPrice;
     // End of variables declaration//GEN-END:variables
 }

@@ -21,10 +21,8 @@ public abstract class DAO<T> {
         this.connection = DataProvider.getInstance().getConnection();
     }
     
-    protected abstract boolean insert();
-    protected abstract T findOne();
-    protected abstract ArrayList<T> find(PreparedStatement preparedStatement);
-    protected abstract ArrayList<T> update();
+    protected abstract boolean execute(PreparedStatement preparedStatement);
+    protected abstract ArrayList<T> excuteQuery(PreparedStatement preparedStatement);
     
     
 }
