@@ -72,8 +72,11 @@ public class Home extends javax.swing.JPanel {
     private void initTablesContainer() {
         tc = new TablesContainer(this);
         tc.setSize(500, 700);
+        JScrollPane  jScrollPane2 = new javax.swing.JScrollPane();
+        jScrollPane2.setViewportView(tc);
+        jScrollPane2.setSize(500,700);
         tc.setBackground(Color.WHITE);
-        jPanel1.add(tc);
+        jPanel1.add(jScrollPane2);
     }
 
     private void intFood(FoodCategoryDTO e) {

@@ -7,7 +7,11 @@ package Controllers;
 
 import DAO.BillDAO;
 import DTO.BillDTO;
+import DTO.BillPanelCustom;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -24,6 +28,13 @@ public class BillCtrl {
     private BillCtrl(){
         
     }
+    public ArrayList<BillDTO> getAll(){
+        try {
+            return BillDAO.getInstance().getALl();
+        } catch (SQLException ex) {
+            return new ArrayList<BillDTO>();
+        }
+    }
     public BillDTO findByidTableAndStatus(int id) throws SQLException{
         return BillDAO.getInstance().findByTable(id);
     }
@@ -38,4 +49,8 @@ public class BillCtrl {
     public boolean updateDaThanhToan(int id) throws SQLException{
         return BillDAO.getInstance().updateStatus(id, BillDAO.DA_THANH_TOAN);
     }
+    public ArrayList<BillPanelCustom> getAllWithTableAndPrice(){
+        return BillDAO.getInstance().getAllWithTableAndPrice();
+    }
+  
 }

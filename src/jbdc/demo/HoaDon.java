@@ -5,6 +5,12 @@
  */
 package jbdc.demo;
 
+import Controllers.BillCtrl;
+import Controllers.BillInfoCtrl;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author ginichimaru
@@ -14,8 +20,35 @@ public class HoaDon extends javax.swing.JPanel {
     /**
      * Creates new form HoaDon
      */
+    private DefaultTableModel billModel;
+    private DefaultTableModel foodModel;
+
     public HoaDon(Main parent) {
         initComponents();
+        billModel = (DefaultTableModel) this.jTableBill.getModel();
+        foodModel = (DefaultTableModel) this.jTablefood.getModel();
+
+        init();
+    }
+
+    public void init() {
+        loadBill();
+        this.jTableBill.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                System.out.println(jTableBill.getValueAt(jTableBill.getSelectedRow(), 0).toString());
+                loadFoodOfBill((int)jTableBill.getValueAt(jTableBill.getSelectedRow(), 0));
+            }
+        });
+    }
+    public void loadFoodOfBill(int id) {
+        foodModel.setNumRows(0);
+        BillInfoCtrl.getInstance().getFoodOfBill(id).forEach(i->foodModel.addRow(i.getObjectArray()));
+    }
+    public void loadBill() {
+        BillCtrl.getInstance().getAllWithTableAndPrice().forEach(i -> billModel.addRow(i.getObjectArray()));
+
     }
 
     /**
@@ -30,9 +63,9 @@ public class HoaDon extends javax.swing.JPanel {
         jScrollPane2 = new javax.swing.JScrollPane();
         jTable2 = new javax.swing.JTable();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jTableBill = new javax.swing.JTable();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable3 = new javax.swing.JTable();
+        jTablefood = new javax.swing.JTable();
 
         jTable2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -47,20 +80,32 @@ public class HoaDon extends javax.swing.JPanel {
         ));
         jScrollPane2.setViewportView(jTable2);
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jTableBill.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane1.setViewportView(jTable1);
 
-        jTable3.setModel(new javax.swing.table.DefaultTableModel(
+            },
+            new String [] {
+                "id", "Bàn", "Trạng thái", "CheckIn", "CheckOut", "Tổng tiền"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jTableBill);
+
+        jTablefood.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -68,10 +113,25 @@ public class HoaDon extends javax.swing.JPanel {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "tên", "số lượng", "đơn giá", "thành tiền"
             }
-        ));
-        jScrollPane3.setViewportView(jTable3);
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane3.setViewportView(jTablefood);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -80,16 +140,16 @@ public class HoaDon extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(310, Short.MAX_VALUE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 752, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
+                .addGap(17, 17, 17)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 354, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(43, Short.MAX_VALUE))
         );
@@ -100,8 +160,8 @@ public class HoaDon extends javax.swing.JPanel {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
-    private javax.swing.JTable jTable3;
+    private javax.swing.JTable jTableBill;
+    private javax.swing.JTable jTablefood;
     // End of variables declaration//GEN-END:variables
 }

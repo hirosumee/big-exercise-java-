@@ -6,7 +6,9 @@
 package DAO;
 
 import DTO.BillDTO;
+import DTO.BillPanelCustom;
 import Interfaces.DAO;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,8 +36,7 @@ public class BillDAO extends DAO<BillDTO> {
         super();
     }
 
-   
-    public boolean insert(int idTable,int createBy) throws SQLException {
+    public boolean insert(int idTable, int createBy) throws SQLException {
         String sql = String.format("INSERT INTO %s (idTable,createBy) VALUES (?,?)", this.table_name);
 
         PreparedStatement preparedStatement = this.connection
@@ -44,7 +45,6 @@ public class BillDAO extends DAO<BillDTO> {
         preparedStatement.setInt(2, createBy);
         return preparedStatement.execute();
     }
-
 
     @Override
     protected ArrayList<BillDTO> excuteQuery(PreparedStatement preparedStatement) {
@@ -61,20 +61,19 @@ public class BillDAO extends DAO<BillDTO> {
         return temps;
     }
 
-
     public BillDTO findByTable(int idTable) throws SQLException {
         String sql = String.format("SELECT * FROM %s WHERE idTable = ? AND status = N'Chưa thanh toán'", this.table_name);
-        
+
         PreparedStatement ps = this.connection.prepareStatement(sql);
         ps.setInt(1, idTable);
         ArrayList<BillDTO> temps = this.excuteQuery(ps);
-        if(temps.size() != 1){
+        if (temps.size() != 1) {
             return null;
         }
         return temps.get(0);
     }
 
-    public boolean updateStatus(int idTable,String status) throws SQLException {
+    public boolean updateStatus(int idTable, String status) throws SQLException {
         String sql = String.format("UPDATE %s SET status = ?, DateCheckout = GETDATE() WHERE id = ?", this.table_name);
         PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
         preparedStatement.setString(1, status);
@@ -83,6 +82,27 @@ public class BillDAO extends DAO<BillDTO> {
     }
     public static String DA_THANH_TOAN = "Đã Thanh Toán";
     public static String CHUA_THANH_TOAN = "Chưa Thanh toán";
+
+    public ArrayList<BillDTO> getALl() throws SQLException {
+        String sql = String.format("SELECT * FROM  %s", this.table_name);
+        PreparedStatement preparedStatement = this.connection.prepareStatement(sql);
+        return this.excuteQuery(preparedStatement);
+    }
+
+    public ArrayList<BillPanelCustom> getAllWithTableAndPrice() {
+        ArrayList<BillPanelCustom> result = new ArrayList<BillPanelCustom>();
+        try {
+            String SQL = "{call SELECT_ALL_BILL ()}";
+            CallableStatement cstmt = this.connection.prepareCall(SQL);
+            ResultSet rs = cstmt.executeQuery();
+            while (rs.next()) {
+                result.add(new BillPanelCustom(rs.getInt("id"), rs.getString("status"), rs.getDate("DateCheckIn"), rs.getDate("DateCheckOut"), rs.getString("name"), rs.getInt("price")));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(BillDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
+    }
 
     @Override
     protected boolean execute(PreparedStatement preparedStatement) {

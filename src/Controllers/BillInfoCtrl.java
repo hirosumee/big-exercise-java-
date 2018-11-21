@@ -8,6 +8,7 @@ package Controllers;
 import DAO.BillDAO;
 import DAO.BillInfoDAO;
 import DTO.BillInfoDTO;
+import DTO.BillInfoPanelCustom;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -48,5 +49,8 @@ public class BillInfoCtrl {
 
     public boolean updateCountByBillInfo(int billInfoId,int idFood, int count) throws SQLException {
         return BillInfoDAO.getInstance().updateCountByBillInfo(billInfoId,idFood, count);
+    }
+    public ArrayList<BillInfoPanelCustom> getFoodOfBill(int idBill) {
+        return BillInfoDAO.getInstance().getFoodOfBill(idBill);
     }
 }

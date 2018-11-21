@@ -6,8 +6,10 @@
 package DAO;
 
 import DTO.BillInfoDTO;
+import DTO.BillInfoPanelCustom;
 import DTO.FoodDTO;
 import Interfaces.DAO;
+import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -99,5 +101,20 @@ public class BillInfoDAO extends DAO<BillInfoDTO> {
             Logger.getLogger(BillInfoDAO.class.getName()).log(Level.SEVERE, null, ex);
         }
         return false;
+    }
+    public ArrayList<BillInfoPanelCustom> getFoodOfBill(int idBill) {
+        ArrayList<BillInfoPanelCustom> result = new ArrayList<BillInfoPanelCustom>();
+        try {
+            String SQL = "{call SELECT_ALL_FOOD_OF_BILL (?)}";
+            CallableStatement cstmt = this.connection.prepareCall(SQL);
+            cstmt.setInt(1, idBill);
+            ResultSet rs = cstmt.executeQuery();
+            while (rs.next()) {
+                result.add(new BillInfoPanelCustom(rs.getString("name"),rs.getInt("count"),rs.getInt("price")));
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(BillDAO.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
     }
 }
